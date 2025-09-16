@@ -5,8 +5,16 @@ from typing import Dict, Any, List
 from datetime import datetime
 from dataclasses import dataclass
 
-from ..protocols.inter_agent_comm import BaseAgent, Message
-from ..utils.logging import system_logger
+try:
+    from ..protocols.inter_agent_comm import BaseAgent, Message
+    from ..utils.logging import system_logger
+except ImportError:
+    # For when imported directly (e.g., in tests)
+    import sys
+    import os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+    from protocols.inter_agent_comm import BaseAgent, Message
+    from utils.logging import system_logger
 
 
 @dataclass

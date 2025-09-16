@@ -5,8 +5,16 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 
-from ..protocols.inter_agent_comm import BaseAgent, Message
-from ..utils.logging import system_logger
+try:
+    from ..protocols.inter_agent_comm import BaseAgent, Message
+    from ..utils.logging import system_logger
+except ImportError:
+    # For when imported directly (e.g., in tests)
+    import sys
+    import os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+    from protocols.inter_agent_comm import BaseAgent, Message
+    from utils.logging import system_logger
 
 
 @dataclass
@@ -263,7 +271,8 @@ class ThreatDetectionAgent(BaseAgent):
                 "total_alerts": 0,
                 "alerts_by_severity": {},
                 "alerts_by_type": {},
-                "resolved_alerts": 0
+                "resolved_alerts": 0,
+                "resolution_rate": 0.0
             }
         
         # Count by severity
@@ -287,7 +296,7 @@ class ThreatDetectionAgent(BaseAgent):
             "alerts_by_severity": alerts_by_severity,
             "alerts_by_type": alerts_by_type,
             "resolved_alerts": resolved_count,
-            "resolution_rate": resolved_count / total_alerts if total_alerts > 0 else 0
+            "resolution_rate": resolved_count / total_alerts if total_alerts > 0 else 0.0
         }
     
     def resolve_threat_alert(self, alert_id: str) -> bool:
